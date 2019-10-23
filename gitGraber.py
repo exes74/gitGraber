@@ -8,7 +8,8 @@ import argparse
 import mmap
 import argcomplete
 import config
-import tokens
+# import tokens
+import cryptotokens
 import os
 import time
 import urllib.parse
@@ -31,8 +32,8 @@ def initFile(name):
         createEmptyBinaryFile(name)
 
 def clean(result):
-    cleanToken = re.sub(tokens.CLEAN_TOKEN_STEP1, '', result.group(0))
-    return re.sub(tokens.CLEAN_TOKEN_STEP2, '', cleanToken)
+    cleanToken = re.sub(cryptotokens.CLEAN_TOKEN_STEP1, '', result.group(0))
+    return re.sub(cryptotokens.CLEAN_TOKEN_STEP2, '', cleanToken)
 
 def monitor():
     cmd='/usr/bin/python3 '+str(path_script)+'/gitGraber.py -q "'+args.query+'"'
@@ -282,7 +283,7 @@ def doRequestGitHub(url, authd=True, verbose=False):
             pass
 
 def doSearchGithub(args,tokenMap, tokenCombos,keyword):
-    url = config.GITHUB_API_URL + urllib.parse.quote(githubQuery +' '+keyword.strip()) +config.GITHUB_SEARCH_PARAMS
+    url = config.GITHUB_API_URL + urllib.parse.quote(githubQuery +''+keyword.strip()) +config.GITHUB_SEARCH_PARAMS
     print(url)
     response = doRequestGitHub(url, True, True)
     content = parseResults(response.text)
@@ -299,7 +300,7 @@ def doSearchGithub(args,tokenMap, tokenCombos,keyword):
                     writeToWordlist(rawGitUrl, args.wordlist)
 
 def searchGithub(keywordsFile, args):
-    tokenMap, tokenCombos = tokens.initTokensMap()
+    tokenMap, tokenCombos = cryptotokens.initTokensMap()
 
     t_keywords = open(keywordsFile).read().split("\n")
 
@@ -326,7 +327,7 @@ if not args.keywordsFile:
 
 if not args.query or args.query == "":
     print('No query (-q or --query) is specified, default query will be used')
-    args.query = ' '
+    args.query = ''
     githubQuery = args.query
 
 keywordsFile = args.keywordsFile
